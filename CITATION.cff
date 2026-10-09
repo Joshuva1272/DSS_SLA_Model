@@ -1,0 +1,50 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "DSS_SLA_Model: Simulation-based decision support for IT service desk staffing"
+type: software
+authors:
+  - family-names: Jeemon
+    given-names: Joshuva
+    affiliation: &ue "Department of Data Science, University of Europe for Applied Sciences, Dubai, United Arab Emirates"
+  - family-names: Walid
+    given-names: Khaled
+    affiliation: *ue
+  - family-names: Shaikh
+    given-names: Mujtaba
+    affiliation: *ue
+  - family-names: AbuKhousa
+    given-names: Eman
+    affiliation: *ue
+repository-code: "https://github.com/Joshuva1272/DSS_SLA_Model"
+url: "https://joshuva1272.github.io/DSS_SLA_Model/"
+license: MIT
+version: "1.0-caisais2026"
+date-released: "2026-10-09"
+keywords:
+  - decision support systems
+  - discrete-event simulation
+  - Monte Carlo simulation
+  - IT service management
+  - workforce staffing
+  - service-level agreements
+preferred-citation:
+  type: conference-paper
+  title: "Decision Support for Resilient IT Service Desk Staffing: An Interactive Monte Carlo Simulation Approach to Emergency Demand Bursts"
+  authors:
+    - family-names: Jeemon
+      given-names: Joshuva
+      affiliation: *ue
+    - family-names: Walid
+      given-names: Khaled
+      affiliation: *ue
+    - family-names: Shaikh
+      given-names: Mujtaba
+      affiliation: *ue
+    - family-names: AbuKhousa
+      given-names: Eman
+      affiliation: *ue
+  collection-title: "CAISAIS 2026"
+  conference:
+    name: "CAISAIS 2026"
+    location: "Ajman University, Ajman, United Arab Emirates"
+  year: 2026

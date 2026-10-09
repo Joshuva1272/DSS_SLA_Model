@@ -1,10 +1,27 @@
 """
-Generate evidence charts for the report/presentation — all figures here are
-produced from ACTUAL runs of the simulation engine in it_service_desk_dss_simulation.py
-(imported directly, not re-typed), so every number is traceable back to the model.
+Generate the evidence charts. All figures are produced from runs of the
+simulation engine in it_service_desk_dss_simulation.py (imported directly,
+not re-implemented), so every number is traceable back to the model.
+
+Paper figures produced here (seed 7, an independent 30-replication run):
+  outputs/evidence_01_scenario_sla_comparison.png   -> Fig. 1
+  outputs/evidence_04_emergency_averaging_problem.png -> Fig. 3
+Supplementary figures:
+  outputs/evidence_02_replication_spread_boxplot.png
+  outputs/evidence_03_wait_time_distribution.png
+
+Usage:  python generate_evidence_charts.py
 """
 import sys
-sys.path.insert(0, "/mnt/user-data/outputs")
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+OUTPUT_DIR = HERE / "outputs"
+OUTPUT_DIR.mkdir(exist_ok=True)
+sys.path.insert(0, str(HERE))
+
+import matplotlib
+matplotlib.use("Agg")
 
 import random
 import statistics
@@ -68,7 +85,7 @@ ax.set_title("Scenario Comparison — SLA Attainment\n(mean ± std. dev. across 
 ax.legend(loc="lower left", fontsize=9)
 ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
-plt.savefig("/mnt/user-data/outputs/evidence_01_scenario_sla_comparison.png", dpi=160)
+plt.savefig(OUTPUT_DIR / "evidence_01_scenario_sla_comparison.png", dpi=160)
 plt.close()
 
 # =====================================================================
@@ -77,7 +94,7 @@ plt.close()
 # =====================================================================
 fig, ax = plt.subplots(figsize=(9, 5.5))
 box_data = [raw[l]["sla"] for l in labels]
-bp = ax.boxplot(box_data, labels=short, patch_artist=True, widths=0.55)
+bp = ax.boxplot(box_data, tick_labels=short, patch_artist=True, widths=0.55)
 for patch, c in zip(bp['boxes'], colors):
     patch.set_facecolor(c)
     patch.set_alpha(0.55)
@@ -91,7 +108,7 @@ ax.set_title("Spread of Outcomes Across 30 Independent Replications\n(why a sing
 ax.legend(loc="lower left", fontsize=9)
 ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
-plt.savefig("/mnt/user-data/outputs/evidence_02_replication_spread_boxplot.png", dpi=160)
+plt.savefig(OUTPUT_DIR / "evidence_02_replication_spread_boxplot.png", dpi=160)
 plt.close()
 
 # =====================================================================
@@ -114,7 +131,7 @@ ax.set_title(f"Ticket-Level Wait Time Distribution — Worst Case, one represent
 ax.legend(fontsize=9)
 ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
-plt.savefig("/mnt/user-data/outputs/evidence_03_wait_time_distribution.png", dpi=160)
+plt.savefig(OUTPUT_DIR / "evidence_03_wait_time_distribution.png", dpi=160)
 plt.close()
 
 # =====================================================================
@@ -141,7 +158,9 @@ ax.set_ylabel("SLA Attainment (%)")
 ax.set_title("The Averaging Problem\nSame Emergency scenario, two different views of the same week")
 ax.grid(axis="y", alpha=0.3)
 plt.tight_layout()
-plt.savefig("/mnt/user-data/outputs/evidence_04_emergency_averaging_problem.png", dpi=160)
+plt.savefig(OUTPUT_DIR / "evidence_04_emergency_averaging_problem.png", dpi=160)
 plt.close()
+print(f"Emergency (averaging-problem figure): weekly SLA {means2[0]:.1f}%, "
+      f"outage-window SLA {means2[1]:.1f}%")
 
-print("\nAll evidence charts saved to /mnt/user-data/outputs/")
+print("\nAll evidence charts saved to", OUTPUT_DIR)

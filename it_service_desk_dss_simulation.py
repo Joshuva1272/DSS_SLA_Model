@@ -4,8 +4,8 @@ IT Service Desk Staffing — Simulation-Based Decision Support System
 
 DECISION PROBLEM:
   How many support agents should the IT Service Desk staff per shift to
-  hit SLA targets (tickets resolved within X minutes) without overstaffing
-  and wasting labor cost?
+  hit SLA targets (time to first response, i.e. queue wait until an agent
+  picks up the ticket) without overstaffing and wasting labor cost?
 
 DECISION-MAKER: IT Service Manager
 STAKEHOLDERS: Support agents, end-users waiting on tickets, Finance (headcount cost)
@@ -18,20 +18,23 @@ WHY SIMULATION (not a closed-form queueing formula):
   & Gawn (2014, Decision Support Systems journal) make for why simulation is
   needed instead of static formulas. This script follows that same logic.
 
-HOW TO USE THIS AS A STARTING POINT:
-  1. Replace the ASSUMPTIONS block below with your team's real numbers
-     (or clearly-labeled reasonable assumptions — cite a source if you have one).
-  2. Run this file directly: `python3 it_service_desk_dss_simulation.py`
-  3. It will print a scenario comparison table and save a staffing
-     sensitivity chart to it_service_desk_sensitivity.png
-  4. Extend from here: add more priority levels, shift schedules,
-     agent skill routing, etc. as time allows.
+USAGE:
+  python it_service_desk_dss_simulation.py
+  Prints the scenario comparison (Table I) and saves the staffing sweep
+  (Fig. 2) and the emergency on-call sweep (Fig. 4) to ./outputs/.
+  Seed: random.seed(42). All model parameters are in the ASSUMPTIONS block.
 """
+
+from pathlib import Path
 
 import simpy
 import random
 import statistics
+import matplotlib
+matplotlib.use("Agg")  # headless rendering; figures are written to files
 import matplotlib.pyplot as plt
+
+OUTPUT_DIR = Path(__file__).resolve().parent / "outputs"
 
 # =====================================================================
 # ASSUMPTIONS
@@ -43,7 +46,7 @@ import matplotlib.pyplot as plt
 #   https://doi.org/10.24432/C57S4H
 #   (Real, anonymized ServiceNow data; 24,985 closed incidents.)
 #
-#   From this real dataset (see DS26_Real_Data_Grounding.md for full detail):
+#   From this real dataset (see docs/DS26_Real_Data_Grounding.md for full detail):
 #     - Real-world overall SLA attainment benchmark: ~63.4%
 #       (i.e. real service desks miss SLA on ~37% of tickets overall —
 #        useful as a reality-check against our Baseline scenario output)
@@ -60,8 +63,6 @@ import matplotlib.pyplot as plt
 #       the analysis we could access in our timeframe, so service times
 #       below remain TEAM ASSUMPTIONS (clearly labeled as such).
 #
-# Replace/adjust further as your team sees fit, and keep citing a source
-# (or labeling clearly as "team assumption") for every number in the report.
 # =====================================================================
 
 SIM_HOURS = 8 * 5          # simulate one work week (8-hour days x 5 days)
@@ -256,7 +257,7 @@ def print_scenario_comparison():
 
 
 def run_sensitivity_sweep():
-    print("Running staffing sensitivity sweep (this is your 'sensitivity analysis' for the report)...")
+    print("Running staffing sensitivity sweep...")
     agent_counts = list(SENSITIVITY_AGENT_RANGE)
     sla_means = []
     sla_stdevs = []
@@ -276,8 +277,11 @@ def run_sensitivity_sweep():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("it_service_desk_sensitivity.png", dpi=150)
-    print("\nSaved chart: it_service_desk_sensitivity.png")
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    out = OUTPUT_DIR / "it_service_desk_sensitivity.png"
+    plt.savefig(out, dpi=150)
+    plt.close()
+    print(f"\nSaved chart: {out}")
 
 
 def run_emergency_staffing_sweep():
@@ -313,8 +317,11 @@ def run_emergency_staffing_sweep():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("it_service_desk_emergency_sensitivity.png", dpi=150)
-    print("\nSaved chart: it_service_desk_emergency_sensitivity.png")
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    out = OUTPUT_DIR / "it_service_desk_emergency_sensitivity.png"
+    plt.savefig(out, dpi=150)
+    plt.close()
+    print(f"\nSaved chart: {out}")
 
 
 if __name__ == "__main__":
